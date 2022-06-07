@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios, { AxiosError } from "axios"
 import { toast } from "react-toastify"
 import customFetch from "../../API/customFetch"
+import { UserData } from "../../Models/UserData";
+import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "../../utils/localStorage";
 
 
 interface RegisterState {
@@ -26,13 +28,10 @@ interface UserState {
 
 const initialState: UserState = {
   isLoading: false,
-  user: null,
+  user: getUserFromLocalStorage()
 }
 
-interface UserData {
-  name: string;
-  email: string;
-}
+
 
 export const registerUser = createAsyncThunk(
   "user/registerUser",
@@ -73,7 +72,12 @@ export const loginUser = createAsyncThunk("user/loginUser", async (user: LoginSt
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    logoutUser: (state) => {
+      state.user = null
+      removeUserFromLocalStorage()
+    }
+  },
   extraReducers: {
     [registerUser.pending.type]: (state) => {
       console.log("Loading")
@@ -82,6 +86,7 @@ const userSlice = createSlice({
     [registerUser.fulfilled.type]: (state, action: PayloadAction<UserData>) => {
       state.isLoading = false
       state.user = action.payload
+      addUserToLocalStorage(action.payload)
       toast.success(`Hello there ${action.payload.name}`)
     },
     [registerUser.rejected.type]: (state, action: PayloadAction<string>) => {
@@ -97,6 +102,7 @@ const userSlice = createSlice({
       state.isLoading = false
 
       state.user = action.payload
+      addUserToLocalStorage(action.payload)
       toast.success(`Welcome back ${action.payload.name}`)
     },
     [loginUser.rejected.type]: (state, action: PayloadAction<string>) => {
@@ -108,6 +114,7 @@ const userSlice = createSlice({
 });
 
 const { reducer, actions } = userSlice
+export const { logoutUser } = actions
 export default reducer
 
 

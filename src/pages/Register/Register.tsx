@@ -4,6 +4,7 @@ import Wrapper from ".";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { loginUser, registerUser } from "../../store/Reducers/userSlice";
+import { useNavigate } from "react-router-dom";
 
 interface InitialState {
   name: string;
@@ -23,6 +24,7 @@ const Register = () => {
   const [values, setValues] = useState<InitialState>(initialState);
   const { user, isLoading } = useAppSelector((store) => store.user);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
@@ -51,6 +53,13 @@ const Register = () => {
     setValues({ ...values, isMember: !values.isMember });
   };
 
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
+  }, [user]);
   return (
     <Wrapper className="full-page">
       <form

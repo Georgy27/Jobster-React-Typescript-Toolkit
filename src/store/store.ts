@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit"
+
 import userSlice from "./Reducers/userSlice"
+import toggleSlice from "./Reducers/appSlice"
 
 export const store = configureStore({
   reducer: {
-    user: userSlice
+    user: userSlice,
+    toggle: toggleSlice
   }
 })
 
