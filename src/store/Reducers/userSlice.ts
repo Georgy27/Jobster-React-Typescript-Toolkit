@@ -2,24 +2,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import axios, { AxiosError } from "axios"
 import { toast } from "react-toastify"
 import customFetch from "../../API/customFetch"
-import { UserData } from "../../Models/UserData";
+import { UserData, RegisterState, LoginState } from "../../Models/UserData";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "../../utils/localStorage";
 
-
-interface RegisterState {
-  name: string,
-  email: string;
-  password: string;
-}
-
-interface LoginState {
-  // name?: string,
-  email: string;
-  password: string;
-}
-interface LoginError {
-  msg: string;
-}
+import { loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
 
 interface UserState {
   isLoading: boolean,
@@ -36,39 +22,19 @@ const initialState: UserState = {
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (user: RegisterState, thunkAPI) => {
-    try {
-      const response = await customFetch.post("/auth/register", user);
-      return response.data.user
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const { response } = error as AxiosError<LoginError>;
-        const errorMsg = response?.data.msg
-        console.log(errorMsg)
-        return thunkAPI.rejectWithValue(errorMsg)
-        // toast.error(error.message)
-        // console.log(error.response?.data?.msg)
-      }
-    }
-  })
+    return registerUserThunk("/auth/register", user, thunkAPI)
+  }
+)
 
 export const loginUser = createAsyncThunk("user/loginUser", async (user: LoginState, thunkAPI) => {
 
-  try {
-    console.log(123)
-    const response = await customFetch.post("/auth/login", user);
-    // console.log(response.data)
-
-    return response.data.user as UserData
-  } catch (error) {
-
-    if (axios.isAxiosError(error)) {
-      const { response } = error as AxiosError<LoginError>;
-      console.log(response?.data.msg)
-      return thunkAPI.rejectWithValue(response?.data.msg)
-
-    }
-  }
+  return loginUserThunk("/auth/login", user, thunkAPI)
 })
+
+export const updateUser = createAsyncThunk("user/updateUser", async (user: UserData, thunkAPI) => {
+  return updateUserThunk("/auth/updateUser", user, thunkAPI)
+})
+
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -99,6 +65,7 @@ const userSlice = createSlice({
       state.isLoading = true
     },
     [loginUser.fulfilled.type]: (state, action: PayloadAction<UserData>) => {
+
       state.isLoading = false
 
       state.user = action.payload
@@ -106,6 +73,22 @@ const userSlice = createSlice({
       toast.success(`Welcome back ${action.payload.name}`)
     },
     [loginUser.rejected.type]: (state, action: PayloadAction<string>) => {
+
+      state.isLoading = false
+      toast.error(action.payload)
+    },
+    [updateUser.pending.type]: (state) => {
+      state.isLoading = true
+    },
+    [updateUser.fulfilled.type]: (state, action: PayloadAction<UserData>) => {
+
+      state.isLoading = false
+
+      state.user = action.payload
+      addUserToLocalStorage(action.payload)
+      toast.success('User Updated!')
+    },
+    [updateUser.rejected.type]: (state, action: PayloadAction<string>) => {
 
       state.isLoading = false
       toast.error(action.payload)
@@ -121,14 +104,3 @@ export default reducer
 
 
 
-////////////////////////////
-
-// (builder) => {
-//   builder.addCase(registerUser.fulfilled, (state, { payload }) => {
-//          console.log("Registered user")
-//     console.log(payload)
-//     state.isLoading = false
-//     state.user = payload.user
-//     toast.success(`Hello there ${payload.user?.email}`)
-//   })
-// }

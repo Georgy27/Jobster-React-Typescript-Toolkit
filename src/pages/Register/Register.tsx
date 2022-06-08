@@ -77,7 +77,6 @@ const Register = () => {
             name="name"
             value={values.name}
             handleChange={handleChange}
-            labelText="hello there"
           />
         )}
 
@@ -87,7 +86,6 @@ const Register = () => {
           name="email"
           value={values.email}
           handleChange={handleChange}
-          labelText="hello there"
         />
         {/* password field */}
         <FormRow
@@ -95,7 +93,6 @@ const Register = () => {
           name="password"
           value={values.password}
           handleChange={handleChange}
-          labelText="hello there"
         />
         <button type="submit" className="btn btn-block" disabled={isLoading}>
           {isLoading ? "loading..." : "submit"}
