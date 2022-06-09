@@ -21,6 +21,7 @@ const FormRow: FC<FormRowProps> = ({
         {labelText || name}
       </label>
       <input
+        id={name}
         type={type}
         name={name}
         value={value}

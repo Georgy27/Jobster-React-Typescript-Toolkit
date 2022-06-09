@@ -22,3 +22,6 @@ export interface UserData {
   token?: string;
 }
 
+export interface LoginError {
+  msg: string;
+}

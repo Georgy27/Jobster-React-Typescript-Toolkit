@@ -1,13 +1,8 @@
 import customFetch from "../../API/customFetch"
 import { logoutUser } from "./userSlice"
 import axios, { AxiosError } from "axios"
-import { UserData, RegisterState, LoginState } from "../../Models/UserData";
+import { UserData, RegisterState, LoginState, LoginError } from "../../Models/UserData";
 import { RootState } from "../store"
-interface LoginError {
-  msg: string;
-}
-
-
 
 export const registerUserThunk = async (url: string, user: UserData | RegisterState, thunkAPI: any) => {
 
@@ -52,6 +47,7 @@ export const updateUserThunk = async (url: string, user: UserData, thunkAPI: any
     const response = await customFetch.patch("/auth/updateUser", user, {
       headers: {
         authorization: `Bearer ${state.user.user?.token}`
+
       }
     });
     const userData = response.data.user as UserData

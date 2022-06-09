@@ -2,11 +2,15 @@ import { configureStore } from "@reduxjs/toolkit"
 
 import userSlice from "./Reducers/userSlice"
 import toggleSlice from "./Reducers/appSlice"
+import jobSlice from "./Reducers/jobSlice"
+import allJobsSlice from "./Reducers/allJobsSlice"
 
 export const store = configureStore({
   reducer: {
     user: userSlice,
-    toggle: toggleSlice
+    toggle: toggleSlice,
+    job: jobSlice,
+    allJobs: allJobsSlice
   }
 })
 
