@@ -5,6 +5,8 @@ import { useAppDispatch } from "../../hooks/redux";
 import { JobsArray } from "../../Models/JobData";
 import JobInfo from "../JobInfo/JobInfo";
 import moment from "moment";
+import { deleteJob, setEditJob } from "../../store/Reducers/jobSlice";
+
 const Job = ({
   _id,
   position,
@@ -16,7 +18,7 @@ const Job = ({
 }: JobsArray) => {
   const dispatch = useAppDispatch();
 
-  const date = moment(createdAt).format("MMM Do, YYYY"); 
+  const date = moment(createdAt).format("MMM Do, YYYY");
   return (
     <Wrapper>
       <header>
@@ -38,14 +40,25 @@ const Job = ({
             <Link
               to="/add-job"
               className="btn edit-btn"
-              onClick={() => console.log("edit job")}
+              onClick={() =>
+                dispatch(
+                  setEditJob({
+                    editJobId: _id,
+                    position,
+                    company,
+                    jobLocation,
+                    jobType,
+                    status,
+                  })
+                )
+              }
             >
               Edit
             </Link>
             <button
               className="btn delete-btn"
               type="button"
-              onClick={() => console.log("delete job")}
+              onClick={() => dispatch(deleteJob(_id))}
             >
               Delete
             </button>

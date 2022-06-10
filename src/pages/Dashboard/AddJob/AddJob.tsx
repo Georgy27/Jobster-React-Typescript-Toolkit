@@ -6,6 +6,7 @@ import {
   clearValues,
   handleChange,
   createJob,
+  editJob,
 } from "../../../store/Reducers/jobSlice";
 import { useEffect } from "react";
 
@@ -32,6 +33,15 @@ const AddJob = () => {
       toast.error("Please fill out all the fields");
     }
 
+    if (isEditing) {
+      dispatch(
+        editJob({
+          jobId: editJobId,
+          job: { position, company, jobLocation, jobType, status },
+        })
+      );
+      return;
+    }
     dispatch(createJob({ position, company, jobLocation, jobType, status }));
   };
 
@@ -49,13 +59,16 @@ const AddJob = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      handleChange({
-        name: "jobLocation",
-        value: user?.location || "",
-      })
-    );
+    if (!isEditing) {
+      dispatch(
+        handleChange({
+          name: "jobLocation",
+          value: user?.location || "",
+        })
+      );
+    }
   }, []);
+
   return (
     <Wrapper>
       <form className="form">

@@ -9,3 +9,8 @@ export interface JobsArray {
   createdAt: string,
 
 }
+
+export interface PostJobData {
+
+  position: string, company: string, jobLocation: string, jobType: string, status: string,
+}
