@@ -3,15 +3,20 @@ import { toast } from "react-toastify";
 import customFetch from "../../API/customFetch";
 import { RootState } from "../store"
 import { JobsArray } from "../../Models/JobData";
+import { months } from "moment";
 
+
+interface HandleChangeValues {
+  name: "searchStatus" | "search" | "searchType" | "sort"
+  value: string;
+}
 interface GetAllJobs {
   jobs: JobsArray[],
   totalJobs: number,
   numOfPages: number,
 
 }
-
-interface AllJobsState {
+interface AllJobsState extends FilterState {
   isLoading: boolean,
   jobs: JobsArray[],
   totalJobs: number,
@@ -20,9 +25,16 @@ interface AllJobsState {
   stats: {},
   monthlyApplications: [],
 
-}
 
-const initialFiltersState = {
+}
+interface FilterState {
+  search: string,
+  searchStatus: string,
+  searchType: string,
+  sort: string,
+  sortOptions: string[]
+}
+const initialFiltersState: FilterState = {
   search: "",
   searchStatus: "all",
   searchType: "all",
@@ -42,8 +54,15 @@ const initialState: AllJobsState = {
 };
 
 export const getAllJobs = createAsyncThunk("allJobs/getJobs", async (_, thunkAPI) => {
-  let url = `/jobs`
   const state = thunkAPI.getState() as RootState
+  const { page, search, searchStatus, searchType, sort } = state.allJobs
+
+  let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`
+
+  if (search) {
+    url = url + `&search=${search}`
+  }
+
   try {
     const response = await customFetch.get(url, {
       headers: {
@@ -64,7 +83,6 @@ export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAP
     const response = await customFetch.get('/jobs/stats')
     const stats = response.data as any
     console.log(stats)
-
     return stats
 
 
@@ -72,7 +90,6 @@ export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAP
     return thunkAPI.rejectWithValue(error.response.data.msg)
   }
 })
-
 
 
 const allJobsSlice = createSlice({
@@ -85,6 +102,17 @@ const allJobsSlice = createSlice({
     hideLoading: (state) => {
       state.isLoading = false
     },
+    handleChange: (state, action: PayloadAction<HandleChangeValues>) => {
+      const name = action.payload.name;
+      const value = action.payload.value;
+      state[name] = value
+    },
+    clearFilters: (state) => {
+      return { ...state, ...initialFiltersState }
+    },
+    changePage: (state, action: PayloadAction<number>) => {
+      state.page = action.payload
+    }
   },
   extraReducers: {
     [getAllJobs.pending.type]: (state) => {
@@ -93,6 +121,8 @@ const allJobsSlice = createSlice({
     [getAllJobs.fulfilled.type]: (state, action: PayloadAction<GetAllJobs>) => {
       state.isLoading = false
       state.jobs = action.payload.jobs
+      state.numOfPages = action.payload.numOfPages
+      state.totalJobs = action.payload.totalJobs
 
     },
     [getAllJobs.rejected.type]: (state, action: PayloadAction<string>) => {
@@ -102,5 +132,5 @@ const allJobsSlice = createSlice({
   }
 })
 
-export const { showLoading, hideLoading } = allJobsSlice.actions
+export const { showLoading, hideLoading, handleChange, clearFilters, changePage } = allJobsSlice.actions
 export default allJobsSlice.reducer

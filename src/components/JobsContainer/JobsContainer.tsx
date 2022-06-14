@@ -3,20 +3,32 @@ import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { getAllJobs } from "../../store/Reducers/allJobsSlice";
 import Job from "../Job/Job";
 import Loading from "../Loading/Loading";
+import PageBtnContainer from "../PageBtnContainer/PageBtnContainer";
 import Wrapper from "./JobsContainer.styles";
 
 const JobsContainer = () => {
-  const { jobs, isLoading } = useAppSelector((store) => store.allJobs);
+  const {
+    jobs,
+    isLoading,
+    page,
+    totalJobs,
+    numOfPages,
+    search,
+    searchStatus,
+    searchType,
+    sort,
+  } = useAppSelector((store) => store.allJobs);
   const dispatch = useAppDispatch();
-  const isFirstRenderRef = useRef(true);
 
   useEffect(() => {
-    if (isFirstRenderRef.current) {
+    const timeoutId = window.setTimeout(() => {
       dispatch(getAllJobs());
-    }
+    }, 500);
 
-    isFirstRenderRef.current = false;
-  }, []);
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [page, search, searchStatus, searchType, sort]);
 
   if (isLoading) {
     return <Loading center />;
@@ -32,13 +44,16 @@ const JobsContainer = () => {
 
   return (
     <Wrapper>
-      <h5>jobs info</h5>
+      <h5>
+        {totalJobs} job{jobs.length > 1 && "s"} found
+      </h5>
       <div className="jobs">
         {jobs.map((job) => {
           console.log(job);
           return <Job key={job._id} {...job} />;
         })}
       </div>
+      {numOfPages > 1 && <PageBtnContainer />}
     </Wrapper>
   );
 };
