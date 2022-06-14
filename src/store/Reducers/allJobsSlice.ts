@@ -59,6 +59,22 @@ export const getAllJobs = createAsyncThunk("allJobs/getJobs", async (_, thunkAPI
   }
 })
 
+export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAPI) => {
+  try {
+    const response = await customFetch.get('/jobs/stats')
+    const stats = response.data as any
+    console.log(stats)
+
+    return stats
+
+
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(error.response.data.msg)
+  }
+})
+
+
+
 const allJobsSlice = createSlice({
   name: "allJobs",
   initialState,

@@ -31,6 +31,7 @@ const AddJob = () => {
 
     if (!position || !company || !jobLocation) {
       toast.error("Please fill out all the fields");
+      return;
     }
 
     if (isEditing) {
