@@ -1,11 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import axios, { AxiosError } from "axios"
 import { toast } from "react-toastify"
-import customFetch from "../../API/customFetch"
 import { UserData, RegisterState, LoginState } from "../../Models/UserData";
 import { addUserToLocalStorage, getUserFromLocalStorage, removeUserFromLocalStorage } from "../../utils/localStorage";
-
-import { loginUserThunk, registerUserThunk, updateUserThunk } from "./userThunk";
+import { loginUserThunk, registerUserThunk, updateUserThunk, clearStoreThunk } from "./userThunk";
 
 interface UserState {
   isLoading: boolean,
@@ -30,6 +27,8 @@ export const loginUser = createAsyncThunk("user/loginUser", async (user: LoginSt
 export const updateUser = createAsyncThunk("user/updateUser", async (user: UserData, thunkAPI) => {
   return updateUserThunk("/auth/updateUser", user, thunkAPI)
 })
+
+export const clearStore = createAsyncThunk("user/clearStore", clearStoreThunk)
 
 const userSlice = createSlice({
   name: "user",
@@ -64,7 +63,6 @@ const userSlice = createSlice({
     [loginUser.fulfilled.type]: (state, action: PayloadAction<UserData>) => {
 
       state.isLoading = false
-
       state.user = action.payload
       addUserToLocalStorage(action.payload)
       toast.success(`Welcome back ${action.payload.name}`)
@@ -89,6 +87,9 @@ const userSlice = createSlice({
 
       state.isLoading = false
       toast.error(action.payload)
+    },
+    [clearStore.rejected.type]: () => {
+      toast.error("There was an error..")
     }
   }
 });

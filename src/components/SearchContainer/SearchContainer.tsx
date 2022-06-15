@@ -24,7 +24,7 @@ const SearchContainer = () => {
       | "searchType"
       | "sort";
     const value = e.target.value;
-    
+    if (isLoading) return; // to prevent next request until the request is complete
     dispatch(handleChange({ name, value }));
   };
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {

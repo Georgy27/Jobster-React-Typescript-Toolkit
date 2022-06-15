@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { resetState, toggleSidebar } from "../../store/Reducers/appSlice";
-import { logoutUser } from "../../store/Reducers/userSlice";
+import { clearStore } from "../../store/Reducers/userSlice";
 
 const Navbar = () => {
   const [showLogout, setShowLogout] = useState(false);
@@ -41,7 +41,7 @@ const Navbar = () => {
               type="button"
               className="dropdown-btn"
               onClick={() => {
-                dispatch(logoutUser("Logging out"));
+                dispatch(clearStore("Logging out"));
                 dispatch(resetState());
               }}
             >

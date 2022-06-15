@@ -21,13 +21,7 @@ const JobsContainer = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      dispatch(getAllJobs());
-    }, 500);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
+    dispatch(getAllJobs());
   }, [page, search, searchStatus, searchType, sort]);
 
   if (isLoading) {
@@ -49,7 +43,6 @@ const JobsContainer = () => {
       </h5>
       <div className="jobs">
         {jobs.map((job) => {
-          console.log(job);
           return <Job key={job._id} {...job} />;
         })}
       </div>

@@ -13,7 +13,25 @@ export interface PostJobData {
   position: string, company: string, jobLocation: string, jobType: string, status: string,
 }
 
+export interface GetAllJobs {
+  jobs: JobsArray[],
+  totalJobs: number,
+  numOfPages: number,
+
+}
+
 export interface MonthlyApp {
   count: number,
   date: string
+}
+
+
+export interface GetAllStats {
+  defaultStats: DefaultStats,
+  monthlyApplications: MonthlyApp[],
+}
+export interface DefaultStats {
+  pending: number,
+  interview: number,
+  declined: number
 }

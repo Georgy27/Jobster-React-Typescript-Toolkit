@@ -1,28 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import customFetch from "../../API/customFetch";
-import { RootState } from "../store"
-import { JobsArray } from "../../Models/JobData";
-import { MonthlyApp } from "../../Models/JobData";
+import { JobsArray, GetAllJobs } from "../../Models/JobData";
+import { MonthlyApp, GetAllStats, DefaultStats } from "../../Models/JobData";
+import { getAllJobsThunk, showStatsThunk } from "./allJobsThunk";
+
+
 interface HandleChangeValues {
   name: "searchStatus" | "search" | "searchType" | "sort"
   value: string;
 }
-interface GetAllJobs {
-  jobs: JobsArray[],
-  totalJobs: number,
-  numOfPages: number,
 
-}
-interface DefaultStats {
-  pending: number,
-  interview: number,
-  declined: number
-}
-interface GetAllStats {
-  defaultStats: DefaultStats,
-  monthlyApplications: MonthlyApp[],
-}
 interface AllJobsState extends FilterState {
   isLoading: boolean,
   jobs: JobsArray[],
@@ -63,48 +50,11 @@ const initialState: AllJobsState = {
   ...initialFiltersState,
 };
 
-export const getAllJobs = createAsyncThunk("allJobs/getJobs", async (_, thunkAPI) => {
-  const state = thunkAPI.getState() as RootState
-  const { page, search, searchStatus, searchType, sort } = state.allJobs
-
-  let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`
-
-  if (search) {
-    url = url + `&search=${search}`
-  }
-
-  try {
-    const response = await customFetch.get(url, {
-      headers: {
-        authorization: `Bearer ${state.user.user?.token}`
-      }
-    })
-    const allJobsData = response.data as GetAllJobs
-    console.log(allJobsData)
-    return allJobsData
-
-  } catch (error) {
-    return thunkAPI.rejectWithValue("There was an error")
-  }
-})
-
-export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAPI) => {
-  const state = thunkAPI.getState() as RootState
-  try {
-    const response = await customFetch.get('/jobs/stats', {
-      headers: {
-        authorization: `Bearer ${state.user.user?.token}`
-      }
-    })
-    const stats = response.data as GetAllStats
-    console.log(stats)
-    return stats
 
 
-  } catch (error: any) {
-    return thunkAPI.rejectWithValue(error.response.data.msg)
-  }
-})
+export const getAllJobs = createAsyncThunk("allJobs/getJobs", getAllJobsThunk)
+
+export const showStats = createAsyncThunk("allJobs/showStats", showStatsThunk)
 
 
 const allJobsSlice = createSlice({
@@ -120,6 +70,7 @@ const allJobsSlice = createSlice({
     handleChange: (state, action: PayloadAction<HandleChangeValues>) => {
       const name = action.payload.name;
       const value = action.payload.value;
+      state.page = 1
       state[name] = value
     },
     clearFilters: (state) => {
@@ -127,7 +78,8 @@ const allJobsSlice = createSlice({
     },
     changePage: (state, action: PayloadAction<number>) => {
       state.page = action.payload
-    }
+    },
+    clearAllJobsState: (state) => initialState
   },
   extraReducers: {
     [getAllJobs.pending.type]: (state) => {
@@ -159,5 +111,5 @@ const allJobsSlice = createSlice({
   }
 })
 
-export const { showLoading, hideLoading, handleChange, clearFilters, changePage } = allJobsSlice.actions
+export const { showLoading, hideLoading, handleChange, clearFilters, changePage, clearAllJobsState } = allJobsSlice.actions
 export default allJobsSlice.reducer
