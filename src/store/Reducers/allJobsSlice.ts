@@ -3,9 +3,7 @@ import { toast } from "react-toastify";
 import customFetch from "../../API/customFetch";
 import { RootState } from "../store"
 import { JobsArray } from "../../Models/JobData";
-import { months } from "moment";
-
-
+import { MonthlyApp } from "../../Models/JobData";
 interface HandleChangeValues {
   name: "searchStatus" | "search" | "searchType" | "sort"
   value: string;
@@ -16,16 +14,26 @@ interface GetAllJobs {
   numOfPages: number,
 
 }
+interface DefaultStats {
+  pending: number,
+  interview: number,
+  declined: number
+}
+interface GetAllStats {
+  defaultStats: DefaultStats,
+  monthlyApplications: MonthlyApp[],
+}
 interface AllJobsState extends FilterState {
   isLoading: boolean,
   jobs: JobsArray[],
   totalJobs: number,
   numOfPages: number,
   page: number,
-  stats: {},
-  monthlyApplications: [],
-
-
+  stats: DefaultStats
+  monthlyApplications: {
+    count: number,
+    date: string
+  }[],
 }
 interface FilterState {
   search: string,
@@ -48,7 +56,9 @@ const initialState: AllJobsState = {
   totalJobs: 0,
   numOfPages: 1,
   page: 1,
-  stats: {},
+  stats: {
+    pending: 0, interview: 0, declined: 0
+  },
   monthlyApplications: [],
   ...initialFiltersState,
 };
@@ -79,9 +89,14 @@ export const getAllJobs = createAsyncThunk("allJobs/getJobs", async (_, thunkAPI
 })
 
 export const showStats = createAsyncThunk("allJobs/showStats", async (_, thunkAPI) => {
+  const state = thunkAPI.getState() as RootState
   try {
-    const response = await customFetch.get('/jobs/stats')
-    const stats = response.data as any
+    const response = await customFetch.get('/jobs/stats', {
+      headers: {
+        authorization: `Bearer ${state.user.user?.token}`
+      }
+    })
+    const stats = response.data as GetAllStats
     console.log(stats)
     return stats
 
@@ -128,7 +143,19 @@ const allJobsSlice = createSlice({
     [getAllJobs.rejected.type]: (state, action: PayloadAction<string>) => {
       state.isLoading = false
       toast.error(action.payload)
-    }
+    },
+    [showStats.pending.type]: (state) => {
+      state.isLoading = true
+    },
+    [showStats.fulfilled.type]: (state, action: PayloadAction<GetAllStats>) => {
+      state.isLoading = false
+      state.stats = action.payload.defaultStats
+      state.monthlyApplications = action.payload.monthlyApplications
+    },
+    [showStats.rejected.type]: (state, action: PayloadAction<string>) => {
+      state.isLoading = false
+      toast.error(action.payload)
+    },
   }
 })
 

@@ -11,13 +11,10 @@ interface UserState {
   isLoading: boolean,
   user: UserData | null
 }
-
 const initialState: UserState = {
   isLoading: false,
   user: getUserFromLocalStorage()
 }
-
-
 
 export const registerUser = createAsyncThunk(
   "user/registerUser",
@@ -25,7 +22,6 @@ export const registerUser = createAsyncThunk(
     return registerUserThunk("/auth/register", user, thunkAPI)
   }
 )
-
 export const loginUser = createAsyncThunk("user/loginUser", async (user: LoginState, thunkAPI) => {
 
   return loginUserThunk("/auth/login", user, thunkAPI)

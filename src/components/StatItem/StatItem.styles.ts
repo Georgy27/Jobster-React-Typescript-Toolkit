@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-const Wrapper = styled.article`
+const Wrapper = styled('article') <{ bcg?: string, color: string }>`
   padding: 2rem;
   background: var(--white);
   border-radius: var(--borderRadius);

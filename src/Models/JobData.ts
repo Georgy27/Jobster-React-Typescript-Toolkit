@@ -1,4 +1,3 @@
-
 export interface JobsArray {
   _id: string,
   company: string,
@@ -9,8 +8,12 @@ export interface JobsArray {
   createdAt: string,
 
 }
-
 export interface PostJobData {
 
   position: string, company: string, jobLocation: string, jobType: string, status: string,
+}
+
+export interface MonthlyApp {
+  count: number,
+  date: string
 }
