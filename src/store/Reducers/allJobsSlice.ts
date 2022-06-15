@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { JobsArray, GetAllJobs } from "../../Models/JobData";
-import { MonthlyApp, GetAllStats, DefaultStats } from "../../Models/JobData";
+import { GetAllStats, DefaultStats } from "../../Models/JobData";
 import { getAllJobsThunk, showStatsThunk } from "./allJobsThunk";
 
 

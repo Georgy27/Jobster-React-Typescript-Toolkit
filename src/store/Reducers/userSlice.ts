@@ -37,7 +37,12 @@ const userSlice = createSlice({
     logoutUser: (state, action) => {
       state.user = null
       removeUserFromLocalStorage()
-      toast.success(action.payload)
+      // in case we have 401 we don't want to display another message
+      if (action.payload === "") {
+        return
+      } else {
+        toast.success(action.payload)
+      }
     }
   },
   extraReducers: {

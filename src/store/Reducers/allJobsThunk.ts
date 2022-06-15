@@ -1,7 +1,7 @@
 import customFetch, { checkForUnauthorizedResponse } from "../../API/customFetch"
 import { RootState } from "../store"
 import { GetAllJobs } from "../../Models/JobData";
-import { MonthlyApp, GetAllStats, DefaultStats } from "../../Models/JobData";
+import { GetAllStats } from "../../Models/JobData";
 
 export const getAllJobsThunk = async (_: void, thunkAPI: any) => {
   const state = thunkAPI.getState() as RootState

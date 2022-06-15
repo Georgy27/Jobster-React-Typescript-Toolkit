@@ -77,6 +77,7 @@ const jobSlice = createSlice({
       toast.success("Job Created")
     },
     [createJob.rejected.type]: (state, action: PayloadAction<string>) => {
+      console.log(action.payload)
       state.isLoading = false;
       toast.error(action.payload)
     },

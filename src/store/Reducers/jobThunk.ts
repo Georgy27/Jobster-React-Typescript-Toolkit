@@ -1,6 +1,4 @@
 import customFetch, { checkForUnauthorizedResponse } from "../../API/customFetch"
-import axios, { AxiosError } from "axios"
-import { LoginError } from "../../Models/UserData";
 import { RootState } from "../store"
 import { getAllJobs, hideLoading, showLoading } from "./allJobsSlice";
 import { clearValues } from "./jobSlice";
@@ -27,11 +25,7 @@ export const createJobThunk = async (job: PostJobData, thunkAPI: any) => {
     thunkAPI.dispatch(clearValues())
     return jobData
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      const { response } = error as AxiosError<LoginError>;
-      const errorMsg = response?.data.msg
-      return checkForUnauthorizedResponse(errorMsg, thunkAPI)
-    }
+    return checkForUnauthorizedResponse(error, thunkAPI)
   }
 }
 
@@ -50,12 +44,8 @@ export const deleteJobThunk = async (jobId: string, thunkAPI: any) => {
     return dataMsg
 
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      thunkAPI.dispatch(hideLoading())
-      const { response } = error as AxiosError<LoginError>;
-      const errorMsg = response?.data.msg
-      return checkForUnauthorizedResponse(errorMsg, thunkAPI)
-    }
+    thunkAPI.dispatch(hideLoading())
+    return checkForUnauthorizedResponse(error, thunkAPI)
   }
 }
 export const editJobThunk = async ({ jobId, job }: EditJobData, thunkAPI: any) => {
@@ -71,11 +61,7 @@ export const editJobThunk = async ({ jobId, job }: EditJobData, thunkAPI: any) =
     thunkAPI.dispatch(clearValues())
     return editJobData
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      thunkAPI.dispatch(hideLoading())
-      const { response } = error as AxiosError<LoginError>;
-      const errorMsg = response?.data.msg
-      return checkForUnauthorizedResponse(errorMsg, thunkAPI)
-    }
+    thunkAPI.dispatch(hideLoading())
+    return checkForUnauthorizedResponse(error, thunkAPI)
   }
 }
